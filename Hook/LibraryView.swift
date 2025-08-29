@@ -38,7 +38,7 @@ struct LibraryView: View {
                             .padding()
                     }
                     .padding()
-                    .background(Color.gray.opacity(0.1))
+                    .background(Color.gray.opacity(0.3))
                     .cornerRadius(12)
                 } else {
                     // Recordings list
@@ -108,7 +108,7 @@ struct RecordingRowView: View {
                     .foregroundColor(.white)
                     .padding(.horizontal, 16)
                     .padding(.vertical, 8)
-                    .background(Color.blue)
+                    .background(Color.cyan)
                     .cornerRadius(6)
                 }
                 
@@ -124,7 +124,7 @@ struct RecordingRowView: View {
             }
         }
         .padding()
-        .background(Color.gray.opacity(0.05))
+        .background(Color.gray.opacity(0.2))
         .cornerRadius(12)
         .confirmationDialog("Delete Recording", isPresented: $showingDeleteConfirmation) {
             Button("Delete", role: .destructive) {

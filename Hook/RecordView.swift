@@ -53,7 +53,7 @@ struct RecordView: View {
                         }
                         .foregroundColor(.white)
                         .padding()
-                        .background(audioManager.isRecording ? Color.red : Color.blue)
+                        .background(audioManager.isRecording ? Color.red : Color.cyan)
                         .cornerRadius(12)
                     }
                     .disabled(!audioManager.hasPermission)
@@ -77,7 +77,7 @@ struct RecordView: View {
                                 .foregroundColor(.white)
                                 .padding(.horizontal, 20)
                                 .padding(.vertical, 10)
-                                .background(Color.green)
+                                .background(Color.mint)
                                 .cornerRadius(8)
                             }
                             
@@ -87,7 +87,7 @@ struct RecordView: View {
                             .foregroundColor(.white)
                             .padding(.horizontal, 20)
                             .padding(.vertical, 10)
-                            .background(Color.orange)
+                            .background(Color.indigo)
                             .cornerRadius(8)
                         }
                         

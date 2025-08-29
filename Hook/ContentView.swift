@@ -28,7 +28,8 @@ struct ContentView: View {
                     Text("Library")
                 }
         }
-        .accentColor(.blue)
+        .accentColor(.cyan)
+        .background(Color.black)
     }
 }
 

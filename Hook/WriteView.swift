@@ -37,7 +37,7 @@ struct WriteView: View {
                         .padding()
                 }
                 .padding()
-                .background(Color.gray.opacity(0.1))
+                .background(Color.gray.opacity(0.3))
                 .cornerRadius(12)
                 
                 Spacer()
