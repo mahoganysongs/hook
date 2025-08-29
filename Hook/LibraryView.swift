@@ -63,14 +63,22 @@ struct RecordingRowView: View {
     let recording: Recording
     let audioManager: AudioManager
     @State private var showingDeleteConfirmation = false
+    @State private var showingRenameDialog = false
+    @State private var newName = ""
     
     var body: some View {
         VStack(alignment: .leading, spacing: 8) {
             HStack {
                 VStack(alignment: .leading) {
-                    Text(recording.name)
-                        .font(.headline)
-                        .lineLimit(1)
+                    Button(action: {
+                        newName = recording.name
+                        showingRenameDialog = true
+                    }) {
+                        Text(recording.name)
+                            .font(.headline)
+                            .lineLimit(1)
+                            .foregroundColor(.primary)
+                    }
                     
                     Text(formatDate(recording.date))
                         .font(.caption)
@@ -124,6 +132,15 @@ struct RecordingRowView: View {
             }
         } message: {
             Text("This action cannot be undone.")
+        }
+        .alert("Rename Recording", isPresented: $showingRenameDialog) {
+            TextField("Recording Name", text: $newName)
+            Button("Save") {
+                audioManager.renameRecording(recording, newName: newName)
+            }
+            Button("Cancel", role: .cancel) { }
+        } message: {
+            Text("Enter a new name for this recording")
         }
     }
     

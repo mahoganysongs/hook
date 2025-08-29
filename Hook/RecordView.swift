@@ -9,8 +9,6 @@ import SwiftUI
 
 struct RecordView: View {
     @StateObject private var audioManager = AudioManager()
-    @State private var showingSaveDialog = false
-    @State private var recordingName = ""
     
     var body: some View {
         NavigationView {
@@ -84,7 +82,7 @@ struct RecordView: View {
                             }
                             
                             Button("Save to Library") {
-                                showingSaveDialog = true
+                                audioManager.saveCurrentRecording()
                             }
                             .foregroundColor(.white)
                             .padding(.horizontal, 20)
@@ -117,18 +115,7 @@ struct RecordView: View {
                 Spacer()
             }
             .padding()
-            .alert("Save Recording", isPresented: $showingSaveDialog) {
-                TextField("Recording Name", text: $recordingName)
-                Button("Save") {
-                    audioManager.saveCurrentRecording(name: recordingName)
-                    recordingName = ""
-                }
-                Button("Cancel", role: .cancel) {
-                    recordingName = ""
-                }
-            } message: {
-                Text("Give your recording a memorable name")
-            }
+
         }
     }
 }

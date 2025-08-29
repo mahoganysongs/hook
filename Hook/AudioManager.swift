@@ -160,7 +160,7 @@ class AudioManager: ObservableObject {
         }
     }
     
-    func saveCurrentRecording(name: String) {
+    func saveCurrentRecording(name: String = "") {
         guard let url = currentRecordingURL else { return }
         
         // Get duration of the recording
@@ -168,9 +168,12 @@ class AudioManager: ObservableObject {
             let player = try AVAudioPlayer(contentsOf: url)
             let duration = player.duration
             
+            // Auto-generate name if not provided
+            let autoName = generateNextRecordingName()
+            
             let recording = Recording(
                 url: url,
-                name: name.isEmpty ? "Recording \(recordings.count + 1)" : name,
+                name: name.isEmpty ? autoName : name,
                 date: Date(),
                 duration: duration
             )
@@ -181,6 +184,33 @@ class AudioManager: ObservableObject {
         } catch {
             print("Could not save recording: \(error)")
         }
+    }
+    
+    private func generateNextRecordingName() -> String {
+        let existingNumbers = recordings.compactMap { recording -> Int? in
+            if recording.name.hasPrefix("AudioRecording") {
+                let numberPart = recording.name.replacingOccurrences(of: "AudioRecording", with: "")
+                return Int(numberPart)
+            }
+            return nil
+        }
+        
+        let nextNumber = (existingNumbers.max() ?? 0) + 1
+        return String(format: "AudioRecording%03d", nextNumber)
+    }
+    
+    func renameRecording(_ recording: Recording, newName: String) {
+        guard let index = recordings.firstIndex(where: { $0.id == recording.id }) else { return }
+        
+        let updatedRecording = Recording(
+            url: recording.url,
+            name: newName.isEmpty ? recording.name : newName,
+            date: recording.date,
+            duration: recording.duration
+        )
+        
+        recordings[index] = updatedRecording
+        saveRecordingsMetadata()
     }
     
     func deleteRecording(_ recording: Recording) {
