@@ -12,31 +12,19 @@ struct ContentView: View {
         TabView {
             WriteView()
                 .tabItem {
-                    Image("write-icon")
-                        .renderingMode(.template)
-                        .resizable()
-                        .aspectRatio(contentMode: .fit)
-                        .frame(width: 25, height: 25)
+                    Image(systemName: "square.and.pencil")
                     Text("Write")
                 }
             
             RecordView()
                 .tabItem {
-                    Image("record-icon")
-                        .renderingMode(.template)
-                        .resizable()
-                        .aspectRatio(contentMode: .fit)
-                        .frame(width: 25, height: 25)
+                    Image(systemName: "mic.circle.fill")
                     Text("Record")
                 }
             
             LibraryView()
                 .tabItem {
-                    Image("library-icon")
-                        .renderingMode(.template)
-                        .resizable()
-                        .aspectRatio(contentMode: .fit)
-                        .frame(width: 25, height: 25)
+                    Image(systemName: "music.note.list")
                     Text("Library")
                 }
         }
