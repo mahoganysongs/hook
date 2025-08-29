@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
-<plist version="1.0">
-<dict>
-	<key>NSMicrophoneUsageDescription</key>
-	<string>Hook needs access to your microphone to record song ideas and vocal performances. This allows you to capture your creative inspiration whenever it strikes.</string>
-</dict>
-</plist>
