@@ -12,19 +12,22 @@ struct ContentView: View {
         TabView {
             WriteView()
                 .tabItem {
-                    Image(systemName: "pencil")
+                    Image("write-icon")
+                        .renderingMode(.template)
                     Text("Write")
                 }
             
             RecordView()
                 .tabItem {
-                    Image(systemName: "mic.circle")
+                    Image("record-icon")
+                        .renderingMode(.template)
                     Text("Record")
                 }
             
             LibraryView()
                 .tabItem {
-                    Image(systemName: "music.note.list")
+                    Image("library-icon")
+                        .renderingMode(.template)
                     Text("Library")
                 }
         }
