@@ -8,6 +8,8 @@
 import SwiftUI
 
 struct LibraryView: View {
+    @StateObject private var audioManager = AudioManager()
+    
     var body: some View {
         NavigationView {
             VStack(spacing: 20) {
@@ -19,30 +21,122 @@ struct LibraryView: View {
                     .font(.title2)
                     .foregroundColor(.secondary)
                 
-                // Placeholder for song library
-                VStack {
-                    Text("🎵")
-                        .font(.system(size: 60))
-                    
-                    Text("Your Songs Will Appear Here")
-                        .font(.headline)
-                        .foregroundColor(.secondary)
-                    
-                    Text("• Organize by date, project, or genre\n• Quick playback and editing\n• Export and share with collaborators")
-                        .font(.caption)
-                        .foregroundColor(.secondary)
-                        .multilineTextAlignment(.center)
-                        .padding()
+                if audioManager.recordings.isEmpty {
+                    // Empty state
+                    VStack {
+                        Text("🎵")
+                            .font(.system(size: 60))
+                        
+                        Text("No Recordings Yet")
+                            .font(.headline)
+                            .foregroundColor(.secondary)
+                        
+                        Text("Record your first song idea in the Record tab!")
+                            .font(.subheadline)
+                            .foregroundColor(.secondary)
+                            .multilineTextAlignment(.center)
+                            .padding()
+                    }
+                    .padding()
+                    .background(Color.gray.opacity(0.1))
+                    .cornerRadius(12)
+                } else {
+                    // Recordings list
+                    ScrollView {
+                        LazyVStack(spacing: 12) {
+                            ForEach(audioManager.recordings, id: \.id) { recording in
+                                RecordingRowView(recording: recording, audioManager: audioManager)
+                            }
+                        }
+                        .padding(.horizontal)
+                    }
                 }
-                .padding()
-                .background(Color.gray.opacity(0.1))
-                .cornerRadius(12)
                 
                 Spacer()
             }
             .padding()
         }
     }
+}
+
+struct RecordingRowView: View {
+    let recording: Recording
+    let audioManager: AudioManager
+    @State private var showingDeleteConfirmation = false
+    
+    var body: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            HStack {
+                VStack(alignment: .leading) {
+                    Text(recording.name)
+                        .font(.headline)
+                        .lineLimit(1)
+                    
+                    Text(formatDate(recording.date))
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                }
+                
+                Spacer()
+                
+                Text(audioManager.formatDuration(recording.duration))
+                    .font(.caption)
+                    .foregroundColor(.secondary)
+            }
+            
+            HStack {
+                Button(action: {
+                    if audioManager.isPlaying {
+                        audioManager.stopPlaying()
+                    } else {
+                        audioManager.playRecording(url: recording.url)
+                    }
+                }) {
+                    HStack {
+                        Image(systemName: audioManager.isPlaying ? "pause.fill" : "play.fill")
+                        Text(audioManager.isPlaying ? "Pause" : "Play")
+                            .font(.subheadline)
+                    }
+                    .foregroundColor(.white)
+                    .padding(.horizontal, 16)
+                    .padding(.vertical, 8)
+                    .background(Color.blue)
+                    .cornerRadius(6)
+                }
+                
+                Spacer()
+                
+                Button(action: {
+                    showingDeleteConfirmation = true
+                }) {
+                    Image(systemName: "trash")
+                        .foregroundColor(.red)
+                        .padding(8)
+                }
+            }
+        }
+        .padding()
+        .background(Color.gray.opacity(0.05))
+        .cornerRadius(12)
+        .confirmationDialog("Delete Recording", isPresented: $showingDeleteConfirmation) {
+            Button("Delete", role: .destructive) {
+                audioManager.deleteRecording(recording)
+            }
+        } message: {
+            Text("This action cannot be undone.")
+        }
+    }
+    
+    private func formatDate(_ date: Date) -> String {
+        let formatter = DateFormatter()
+        formatter.dateStyle = .medium
+        formatter.timeStyle = .short
+        return formatter.string(from: date)
+    }
+}
+
+#Preview {
+    LibraryView()
 }
 
 #Preview {

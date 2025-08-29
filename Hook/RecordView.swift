@@ -9,10 +9,12 @@ import SwiftUI
 
 struct RecordView: View {
     @StateObject private var audioManager = AudioManager()
+    @State private var showingSaveDialog = false
+    @State private var recordingName = ""
     
     var body: some View {
         NavigationView {
-            VStack(spacing: 30) {
+            VStack(spacing: 20) {
                 Text("Record")
                     .font(.largeTitle)
                     .fontWeight(.bold)
@@ -21,7 +23,22 @@ struct RecordView: View {
                     .font(.title2)
                     .foregroundColor(.secondary)
                 
-                VStack(spacing: 20) {
+                // Recording Duration
+                if audioManager.isRecording || audioManager.recordingDuration > 0 {
+                    Text(audioManager.formatDuration(audioManager.recordingDuration))
+                        .font(.title)
+                        .fontWeight(.semibold)
+                        .foregroundColor(audioManager.isRecording ? .red : .primary)
+                }
+                
+                // Waveform Visualization
+                if !audioManager.audioLevels.isEmpty {
+                    WaveformView(audioLevels: audioManager.audioLevels, isRecording: audioManager.isRecording)
+                        .padding(.horizontal)
+                }
+                
+                // Control Buttons
+                VStack(spacing: 15) {
                     // Record Button
                     Button(action: {
                         if audioManager.isRecording {
@@ -43,35 +60,75 @@ struct RecordView: View {
                     }
                     .disabled(!audioManager.hasPermission)
                     
-                    // Play Button
-                    Button(action: {
-                        if audioManager.isPlaying {
-                            audioManager.stopPlaying()
-                        } else {
-                            audioManager.playRecording()
+                    // Playback Controls
+                    if audioManager.currentRecordingURL != nil {
+                        HStack(spacing: 15) {
+                            Button(action: {
+                                if audioManager.isPlaying {
+                                    audioManager.pausePlaying()
+                                } else {
+                                    audioManager.playRecording()
+                                }
+                            }) {
+                                HStack {
+                                    Image(systemName: audioManager.isPlaying ? "pause.circle.fill" : "play.circle.fill")
+                                        .font(.title2)
+                                    Text(audioManager.isPlaying ? "Pause" : "Play")
+                                        .font(.subheadline)
+                                }
+                                .foregroundColor(.white)
+                                .padding(.horizontal, 20)
+                                .padding(.vertical, 10)
+                                .background(Color.green)
+                                .cornerRadius(8)
+                            }
+                            
+                            Button("Save to Library") {
+                                showingSaveDialog = true
+                            }
+                            .foregroundColor(.white)
+                            .padding(.horizontal, 20)
+                            .padding(.vertical, 10)
+                            .background(Color.orange)
+                            .cornerRadius(8)
                         }
-                    }) {
-                        HStack {
-                            Image(systemName: audioManager.isPlaying ? "pause.circle.fill" : "play.circle.fill")
-                                .font(.title)
-                            Text(audioManager.isPlaying ? "Stop Playback" : "Play Recording")
-                                .font(.headline)
+                        
+                        // Playback Progress
+                        if audioManager.isPlaying && audioManager.playbackProgress > 0 {
+                            VStack {
+                                Text("Playing: \(audioManager.formatDuration(audioManager.playbackProgress))")
+                                    .font(.caption)
+                                    .foregroundColor(.secondary)
+                            }
                         }
-                        .foregroundColor(.white)
-                        .padding()
-                        .background(Color.green)
-                        .cornerRadius(12)
                     }
-                    
-                    // Permission Status
-                    Text(audioManager.hasPermission ? "✓ Microphone Access Granted" : "❌ Microphone Permission Required")
+                }
+                
+                // Permission Status
+                if !audioManager.hasPermission {
+                    Text("❌ Microphone Permission Required")
                         .font(.caption)
-                        .foregroundColor(audioManager.hasPermission ? .green : .red)
+                        .foregroundColor(.red)
+                        .padding()
+                        .background(Color.red.opacity(0.1))
+                        .cornerRadius(8)
                 }
                 
                 Spacer()
             }
             .padding()
+            .alert("Save Recording", isPresented: $showingSaveDialog) {
+                TextField("Recording Name", text: $recordingName)
+                Button("Save") {
+                    audioManager.saveCurrentRecording(name: recordingName)
+                    recordingName = ""
+                }
+                Button("Cancel", role: .cancel) {
+                    recordingName = ""
+                }
+            } message: {
+                Text("Give your recording a memorable name")
+            }
         }
     }
 }
