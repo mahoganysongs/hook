@@ -14,6 +14,9 @@ struct ContentView: View {
                 .tabItem {
                     Image("write-icon")
                         .renderingMode(.template)
+                        .resizable()
+                        .aspectRatio(contentMode: .fit)
+                        .frame(width: 25, height: 25)
                     Text("Write")
                 }
             
@@ -21,6 +24,9 @@ struct ContentView: View {
                 .tabItem {
                     Image("record-icon")
                         .renderingMode(.template)
+                        .resizable()
+                        .aspectRatio(contentMode: .fit)
+                        .frame(width: 25, height: 25)
                     Text("Record")
                 }
             
@@ -28,6 +34,9 @@ struct ContentView: View {
                 .tabItem {
                     Image("library-icon")
                         .renderingMode(.template)
+                        .resizable()
+                        .aspectRatio(contentMode: .fit)
+                        .frame(width: 25, height: 25)
                     Text("Library")
                 }
         }
