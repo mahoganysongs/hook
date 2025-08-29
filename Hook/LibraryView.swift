@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct LibraryView: View {
-    @StateObject private var audioManager = AudioManager()
+    @ObservedObject private var audioManager = AudioManager.shared
     
     var body: some View {
         NavigationView {
@@ -45,7 +45,7 @@ struct LibraryView: View {
                     ScrollView {
                         LazyVStack(spacing: 12) {
                             ForEach(audioManager.recordings, id: \.id) { recording in
-                                RecordingRowView(recording: recording, audioManager: audioManager)
+                                RecordingRowView(recording: recording)
                             }
                         }
                         .padding(.horizontal)
@@ -61,7 +61,7 @@ struct LibraryView: View {
 
 struct RecordingRowView: View {
     let recording: Recording
-    let audioManager: AudioManager
+    @ObservedObject private var audioManager = AudioManager.shared
     @State private var showingDeleteConfirmation = false
     @State private var showingRenameDialog = false
     @State private var newName = ""

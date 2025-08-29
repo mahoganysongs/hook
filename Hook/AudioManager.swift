@@ -8,15 +8,20 @@
 import Foundation
 import AVFoundation
 
-struct Recording {
+struct Recording: Identifiable, Equatable {
     let id = UUID()
     let url: URL
-    let name: String
+    var name: String
     let date: Date
     let duration: TimeInterval
+    
+    static func == (lhs: Recording, rhs: Recording) -> Bool {
+        return lhs.id == rhs.id
+    }
 }
 
 class AudioManager: ObservableObject {
+    static let shared = AudioManager()
     private var audioRecorder: AVAudioRecorder?
     private var audioPlayer: AVAudioPlayer?
     private var recordingSession: AVAudioSession = AVAudioSession.sharedInstance()
@@ -32,7 +37,7 @@ class AudioManager: ObservableObject {
     @Published var recordings: [Recording] = []
     @Published var audioLevels: [Float] = []
     
-    init() {
+    private init() {
         setupAudioSession()
         loadSavedRecordings()
     }
@@ -161,7 +166,10 @@ class AudioManager: ObservableObject {
     }
     
     func saveCurrentRecording(name: String = "") {
-        guard let url = currentRecordingURL else { return }
+        guard let url = currentRecordingURL else { 
+            print("No current recording URL to save")
+            return 
+        }
         
         // Get duration of the recording
         do {
@@ -170,16 +178,20 @@ class AudioManager: ObservableObject {
             
             // Auto-generate name if not provided
             let autoName = generateNextRecordingName()
+            let finalName = name.isEmpty ? autoName : name
             
             let recording = Recording(
                 url: url,
-                name: name.isEmpty ? autoName : name,
+                name: finalName,
                 date: Date(),
                 duration: duration
             )
             
             recordings.append(recording)
             saveRecordingsMetadata()
+            
+            print("Saved recording: \(finalName) at \(url)")
+            print("Total recordings: \(recordings.count)")
             
         } catch {
             print("Could not save recording: \(error)")
@@ -202,14 +214,7 @@ class AudioManager: ObservableObject {
     func renameRecording(_ recording: Recording, newName: String) {
         guard let index = recordings.firstIndex(where: { $0.id == recording.id }) else { return }
         
-        let updatedRecording = Recording(
-            url: recording.url,
-            name: newName.isEmpty ? recording.name : newName,
-            date: recording.date,
-            duration: recording.duration
-        )
-        
-        recordings[index] = updatedRecording
+        recordings[index].name = newName.isEmpty ? recording.name : newName
         saveRecordingsMetadata()
     }
     

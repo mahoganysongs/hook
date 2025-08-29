@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct RecordView: View {
-    @StateObject private var audioManager = AudioManager()
+    @ObservedObject private var audioManager = AudioManager.shared
     
     var body: some View {
         NavigationView {
