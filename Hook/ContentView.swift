@@ -8,67 +8,27 @@
 import SwiftUI
 
 struct ContentView: View {
-    @StateObject private var audioManager = AudioManager()
-    
     var body: some View {
-        VStack(spacing: 30) {
-            Text("Hook")
-                .font(.largeTitle)
-                .fontWeight(.bold)
-            
-            Text("Capture Your Musical Ideas")
-                .font(.title2)
-                .foregroundColor(.secondary)
-            
-            VStack(spacing: 20) {
-                // Record Button
-                Button(action: {
-                    if audioManager.isRecording {
-                        audioManager.stopRecording()
-                    } else {
-                        audioManager.startRecording()
-                    }
-                }) {
-                    HStack {
-                        Image(systemName: audioManager.isRecording ? "stop.circle.fill" : "mic.circle.fill")
-                            .font(.title)
-                        Text(audioManager.isRecording ? "Stop Recording" : "Start Recording")
-                            .font(.headline)
-                    }
-                    .foregroundColor(.white)
-                    .padding()
-                    .background(audioManager.isRecording ? Color.red : Color.blue)
-                    .cornerRadius(12)
+        TabView {
+            WriteView()
+                .tabItem {
+                    Image(systemName: "pencil")
+                    Text("Write")
                 }
-                .disabled(!audioManager.hasPermission)
-                
-                // Play Button
-                Button(action: {
-                    if audioManager.isPlaying {
-                        audioManager.stopPlaying()
-                    } else {
-                        audioManager.playRecording()
-                    }
-                }) {
-                    HStack {
-                        Image(systemName: audioManager.isPlaying ? "pause.circle.fill" : "play.circle.fill")
-                            .font(.title)
-                        Text(audioManager.isPlaying ? "Stop Playback" : "Play Recording")
-                            .font(.headline)
-                    }
-                    .foregroundColor(.white)
-                    .padding()
-                    .background(Color.green)
-                    .cornerRadius(12)
+            
+            RecordView()
+                .tabItem {
+                    Image(systemName: "mic.circle")
+                    Text("Record")
                 }
-                
-                // Permission Status
-                Text(audioManager.hasPermission ? "✓ Microphone Access Granted" : "❌ Microphone Permission Required")
-                    .font(.caption)
-                    .foregroundColor(audioManager.hasPermission ? .green : .red)
-            }
+            
+            LibraryView()
+                .tabItem {
+                    Image(systemName: "music.note.list")
+                    Text("Library")
+                }
         }
-        .padding()
+        .accentColor(.blue)
     }
 }
 
