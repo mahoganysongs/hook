@@ -187,7 +187,7 @@ class AudioManager: ObservableObject {
                 duration: duration
             )
             
-            recordings.append(recording)
+            recordings.insert(recording, at: 0) // Insert at beginning for newest first
             saveRecordingsMetadata()
             
             print("Saved recording: \(finalName) at \(url)")
